@@ -1,9 +1,12 @@
 package com.learning.backend.service.impl;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.learning.backend.dto.ReqRes;
 import com.learning.backend.model.Employee;
 import com.learning.backend.repository.EmployeeRepository;
+import com.learning.backend.service.EmployeeService;
 import com.learning.backend.service.JWTUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserManagementServices {
+public class UserManagementServices implements EmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -27,20 +30,25 @@ public class UserManagementServices {
     private AuthenticationManager authenticationManager;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ModelMapper modelMapper ;
+
+
 
     public ReqRes register(ReqRes registrationRequest){
         ReqRes resp = new ReqRes();
 
         try {
+            /*Employee employee = modelMapper.map(registrationRequest, Employee.class);
+            Employee ourUsersResult = employeeRepository.save(employee);*/
             Employee employee = new Employee();
+            employee.setEmail(registrationRequest.getEmail());
             employee.setFirstName(registrationRequest.getFirstName());
             employee.setLastName(registrationRequest.getLastName());
-            employee.setEmail(registrationRequest.getEmail());
             employee.setRole(registrationRequest.getRole());
             employee.setPhoneNum(registrationRequest.getPhoneNum());
             employee.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
             Employee ourUsersResult = employeeRepository.save(employee);
-
             if (ourUsersResult.getId()>0) {
                 resp.setEmployee((ourUsersResult));
                 resp.setMessage("User Saved Successfully");
@@ -54,25 +62,25 @@ public class UserManagementServices {
         return resp;
     }
 
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public ReqRes login(ReqRes loginRequest){
         ReqRes response = new ReqRes();
         try {
             authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
                             loginRequest.getPassword()));
-            var user = employeeRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
-            var jwt = jwtUtils.generateToken((UserDetails) user);
-            var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), (UserDetails) user);
+            var user = employeeRepository.findByEmail(loginRequest.getEmail());
+            var jwt = jwtUtils.generateToken(user);
+            var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), user);
             response.setStatuscode(200);
             response.setToken(jwt);
-            response.setRole(user.getRole());
             response.setRefreshToken(refreshToken);
             response.setExpirationTime("24Hrs");
             response.setMessage("Successfully Logged In");
 
         }catch (Exception e){
             response.setStatuscode(500);
+
             response.setMessage(e.getMessage());
         }
         return response;
@@ -86,7 +94,7 @@ public class UserManagementServices {
         ReqRes response = new ReqRes();
         try{
             String ourEmail = jwtUtils.extractUsername(refreshTokenReqiest.getToken());
-            Employee users = (Employee) employeeRepository.findByEmail(ourEmail).orElseThrow();
+            Employee users = (Employee) employeeRepository.findByEmail(ourEmail);
             if (jwtUtils.isTokenValid(refreshTokenReqiest.getToken(), (UserDetails) users)) {
                 var jwt = jwtUtils.generateToken((UserDetails) users);
                 response.setStatuscode(200);
@@ -121,6 +129,7 @@ public class UserManagementServices {
             }
             return reqRes;
         } catch (Exception e) {
+            reqRes.setMessage("Successful");
             reqRes.setStatuscode(500);
             reqRes.setMessage("Error occurred: " + e.getMessage());
             return reqRes;
@@ -198,9 +207,9 @@ public class UserManagementServices {
     public ReqRes getMyInfo(String email){
         ReqRes reqRes = new ReqRes();
         try {
-            Optional<Employee> userOptional= Optional.ofNullable(employeeRepository.findByEmail(email));
-            if (userOptional.isPresent()) {
-                reqRes.setStatuscode(userOptional.get());
+            Optional<Employee> employeeOptional = Optional.ofNullable(employeeRepository.findByEmail(email));
+            if (employeeOptional.isPresent()) {
+                reqRes.setStatuscode(employeeOptional.get().getId().intValue());
                 reqRes.setStatuscode(200);
                 reqRes.setMessage("successful");
             } else {
@@ -215,4 +224,6 @@ public class UserManagementServices {
         return reqRes;
 
     }
+
+
 }
