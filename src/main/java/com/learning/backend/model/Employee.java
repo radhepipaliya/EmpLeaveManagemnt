@@ -1,12 +1,22 @@
 package com.learning.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
-import org.aspectj.apache.bcel.classfile.LineNumber;
+import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import java.util.Collection;
+import java.util.List;
 
 
 @Entity
 @Table(name="employee")
-public class Employee {
+@Data
+public class Employee implements UserDetails{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,41 +35,15 @@ public class Employee {
     @Column(name="role")
     private String role;
 
-    public Employee() {
+    public Employee()  {
     }
 
-
-    public Employee(Long id, String firstName, String lastName, String email, String password, Long number, String role) {
-        this.id = id;
+    public Employee(String firstName, String lastName, String email, String password, Long phoneNum, String role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.phoneNum = number;
-        this.role = role;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Long getPhoneNum() {
-        return phoneNum;
-    }
-
-    public void setPhoneNum(Long number) {
-        this.phoneNum = number;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
+        this.phoneNum = phoneNum;
         this.role = role;
     }
 
@@ -95,7 +79,66 @@ public class Employee {
         this.email = email;
     }
 
-    public Object orElseThrow() {
-        return null;
+
+    @JsonIgnore
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role));
     }
+
+    public List<String> getRolesAsStrings() {
+        return List.of(role); // Return roles as a list of strings
+    }
+
+
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Long getPhoneNum() {
+        return phoneNum;
+    }
+
+    public void setPhoneNum(Long phoneNum) {
+        this.phoneNum = phoneNum;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
 }

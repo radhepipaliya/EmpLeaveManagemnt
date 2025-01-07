@@ -1,11 +1,13 @@
 package com.learning.backend.service;
 
 
+import com.learning.backend.dto.ReqRes;
 import com.learning.backend.model.Employee;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface EmployeeService {
-    public Employee saveEmployee(Employee employee);
-    public List<Employee> getAllEmployee();
+    ReqRes register(ReqRes reg);
 }
