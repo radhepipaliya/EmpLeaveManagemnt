@@ -1,11 +1,9 @@
-package com.learning.backend.service.impl;
+package com.learning.backend.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.learning.backend.dto.ReqRes;
 import com.learning.backend.model.Employee;
 import com.learning.backend.repository.EmployeeRepository;
-import com.learning.backend.service.EmployeeService;
-import com.learning.backend.service.JWTUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -74,6 +71,8 @@ public class UserManagementServices implements EmployeeService {
             var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), user);
             response.setStatuscode(200);
             response.setToken(jwt);
+            response.setRole(user.getRole());
+            response.setId(user.getId());
             response.setRefreshToken(refreshToken);
             response.setExpirationTime("24Hrs");
             response.setMessage("Successfully Logged In");
@@ -224,6 +223,9 @@ public class UserManagementServices implements EmployeeService {
         return reqRes;
 
     }
+
+
+
 
 
 }
