@@ -1,5 +1,6 @@
 package com.learning.backend.controller;
 
+import com.learning.backend.dto.ReqLeave;
 import com.learning.backend.dto.ReqRes;
 import com.learning.backend.model.Employee;
 import com.learning.backend.service.EmployeeService;
@@ -64,6 +65,12 @@ public class EmployeeController {
     @DeleteMapping("/admin/delete/{userId}")
     public ResponseEntity<ReqRes> deleteUSer(@PathVariable Integer userId){
         return ResponseEntity.ok(userManagementServices.deleteUser(Long.valueOf(userId)));
+    }
+
+    @GetMapping("/public/get-user-info/{employeeId}")
+    public ResponseEntity<ReqRes> getUserInfo(@PathVariable Long employeeId) {
+        return ResponseEntity.ok(userManagementServices.getUsersById(employeeId));
+
     }
 
 }

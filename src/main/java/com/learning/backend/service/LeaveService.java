@@ -18,4 +18,6 @@ public interface LeaveService {
     ReqLeave updateApplicationStatus(Long applicationId,  Map<String, String> statusPayload);
 
     ReqLeave findByEmployeeId(Long employeeid);
+
+
 }
