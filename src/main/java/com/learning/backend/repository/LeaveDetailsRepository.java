@@ -11,9 +11,8 @@ import java.util.List;
 @EnableJpaRepositories
 public interface LeaveDetailsRepository extends JpaRepository<LeaveDetails,Long> {
 
-    @Query("SELECT l FROM LeaveDetails l WHERE l.employeeid = ?1")
-    List<LeaveDetails> findByEmployeeId(@Param("employee_id") Long employeeid);
 
+    List<LeaveDetails> findByEmployeeId(Long employeeId);
 
 
 }

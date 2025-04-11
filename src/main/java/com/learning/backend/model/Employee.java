@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class Employee implements UserDetails{
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
-    @Column(name = "email_id", nullable = true)
+    @Column(name = "email_id")
     private String email;
     @Column(name="user_password")
     private String password;
@@ -34,6 +35,11 @@ public class Employee implements UserDetails{
     private Long phoneNum;
     @Column(name="role")
     private String role;
+
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<LeaveDetails> leaveDetails = new ArrayList<>();
 
     public Employee()  {
     }

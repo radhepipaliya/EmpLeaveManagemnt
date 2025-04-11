@@ -13,8 +13,9 @@ public class LeaveDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "employee_id")
-    private Long employeeid;
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    private Employee employee;
 
     @JsonProperty("startDate")
     @Column(name="start_date")
@@ -32,9 +33,9 @@ public class LeaveDetails {
     public LeaveDetails() {
     }
 
-    public LeaveDetails(Long id, Long employeeid, String startDate, String endDate, String leaveType, String reason, String status) {
+    public LeaveDetails(Long id, Employee employee, String startDate, String endDate, String leaveType, String reason, String status) {
         this.id = id;
-        this.employeeid = employeeid;
+        this.employee = employee;
         StartDate = startDate;
         EndDate = endDate;
         LeaveType = leaveType;
@@ -50,28 +51,28 @@ public class LeaveDetails {
         this.id = id;
     }
 
-    public Long getEmployeeid() {
-        return employeeid;
+    public Employee getEmployee() {
+        return employee;
     }
 
-    public void setEmployeeid(Long employeeid) {
-        this.employeeid = employeeid;
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
-    public String getStartDate(String startDate) {
+    public String getStartDate() {
         return StartDate;
     }
 
     public void setStartDate(String startDate) {
-        this.StartDate = startDate;
+        StartDate = startDate;
     }
 
-    public String getEndDate(String endDate) {
+    public String getEndDate() {
         return EndDate;
     }
 
     public void setEndDate(String endDate) {
-        this.EndDate = endDate;
+        EndDate = endDate;
     }
 
     public String getLeaveType() {

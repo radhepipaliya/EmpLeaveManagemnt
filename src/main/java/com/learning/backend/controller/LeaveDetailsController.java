@@ -44,11 +44,11 @@ public class LeaveDetailsController {
     public ResponseEntity<?> updateApplicationStatus(@PathVariable Long applicationId, @RequestBody Map<String, String> statusPayload) {
         return ResponseEntity.ok(leaveService.updateApplicationStatus(applicationId, statusPayload));
     }
-
+    
 
     @GetMapping("/public/user-application/{employeeId}")
     public ResponseEntity<ReqLeave> getUserApplications(@PathVariable Long employeeId) {
-        return ResponseEntity.ok(leaveService.findByEmployeeId(employeeId));
+        return ResponseEntity.ok(leaveService.findApplicationByEmployeeId(employeeId));
 
     }
 

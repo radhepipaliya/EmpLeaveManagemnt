@@ -11,13 +11,12 @@ import java.util.Map;
 @Service
 public interface LeaveService {
     ReqLeave applyLeave(ReqLeave leave);
+
     ReqLeave getAllApplication();
 
     ReqLeave updateLeaveDetails(Integer applicationId, LeaveDetails reqLeave);
 
     ReqLeave updateApplicationStatus(Long applicationId,  Map<String, String> statusPayload);
 
-    ReqLeave findByEmployeeId(Long employeeid);
-
-
+    ReqLeave findApplicationByEmployeeId(Long employeeId);
 }
