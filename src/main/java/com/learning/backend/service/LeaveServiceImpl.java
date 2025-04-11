@@ -1,6 +1,7 @@
 package com.learning.backend.service;
 
 import com.learning.backend.dto.ReqLeave;
+import com.learning.backend.model.Employee;
 import com.learning.backend.model.LeaveDetails;
 import com.learning.backend.repository.EmployeeRepository;
 import com.learning.backend.repository.LeaveDetailsRepository;
@@ -25,13 +26,22 @@ public class LeaveServiceImpl implements LeaveService {
         ReqLeave resp = new ReqLeave();
 
         try {
+            Optional<Employee> employeeOpt = employeeRepository.findById(leave.getEmployeeid());
+            if (employeeOpt.isEmpty()) {
+                resp.setStatuscode(404);
+                resp.setMessage("Employee not found");
+                return resp;
+            }
+
+
             LeaveDetails leaveDetails = new LeaveDetails();
             leaveDetails.setStartDate(leave.getStartDate());
             leaveDetails.setEndDate(leave.getEndDate());
-            leaveDetails.setEmployeeid(leave.getEmployeeid());
             leaveDetails.setLeaveType(leave.getLeaveType());
             leaveDetails.setReason(leave.getReason());
             leaveDetails.setStatus("Pending");
+            leaveDetails.setEmployee(employeeOpt.get());
+
 
             LeaveDetails ourLeaveResult = leaveDetailsRepository.save(leaveDetails);
             System.out.println("->>>>" + ourLeaveResult);
@@ -115,12 +125,12 @@ public class LeaveServiceImpl implements LeaveService {
         return reqLeave;
     }
 
-
-    public ReqLeave findByEmployeeId(Long employeeid) {
+    @Override
+    public ReqLeave findApplicationByEmployeeId(Long employeeId) {
         ReqLeave reqLeave = new ReqLeave();
 
         try {
-            List<LeaveDetails> result = leaveDetailsRepository.findByEmployeeId(employeeid);
+            List<LeaveDetails> result = leaveDetailsRepository.findByEmployeeId(employeeId);
             if (!result.isEmpty()) {
                 reqLeave.setLeaveDetailsList(result); // Set the list of LeaveDetails
                 reqLeave.setStatuscode(200);
